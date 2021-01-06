@@ -3,3 +3,5 @@
 /.python-version
 /data/
 /book_search_project/db.sqlite3
+*.pyc
+__pycache__/

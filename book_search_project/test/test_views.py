@@ -20,8 +20,9 @@ class TestBookListView(TestCase):
 
     def test_if_book_is_found_with_query(self):
         response = self.client.get('/books/search/', {'q': 'a', 'page': 0})
-        self.assertJSONEqual(
-            response.content, {'books': [{'isbn': 1, 'title': 'aa', 'author': 1, 'type': 'a'}]}
+        expected_book = Book.objects.get(title__startswith='a')
+        self.assertEqual(
+            response.json()['books'][0]['isbn'], expected_book.isbn
         )
 
     def test_if_books_search_returns_only_query_matching_books(self):
@@ -76,6 +77,7 @@ class TestBookDetailView(TestCase):
     def test_if_reviews_are_from_correct_book(self):
         response = self.client.get('/books/{}/'.format(self.book_1.isbn))
         for review in response.json()['reviews']:
-            self.assertEqual(review['book'], self.book_1.isbn)
+            review_book_isbn = Review.objects.get(id=review['id']).book.isbn
+            self.assertEqual(review_book_isbn, self.book_1.isbn)
 
 
